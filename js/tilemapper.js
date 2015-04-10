@@ -2,8 +2,23 @@
   var TileMap = function(options) {
     this.canvas = options.canvas;
     this.context = this.canvas.getContext('2d');
-    this.images = options.images;
     this.map = options.map;
+
+    // Add each image to the appropriate tileset and patch a function to verify
+    // it's index boundaries
+    this.map.tilesets.forEach(function(tileset, index, tilesets) {
+      var tiles = Math.floor(tileset.imagewidth / tileset.tilewidth) *
+                  Math.floor(tileset.imageheight / tileset.tileheight);
+
+      tilesets[index].image = options.images[index];
+      tilesets[index].min = tileset.firstgid - 1;
+      tilesets[index].max = tilesets[index].min + tiles;
+
+      // Check whether the 'number' is in this tileset or not
+      tilesets[index].inside = function(number) {
+        return number >= this.min && this.max >= number;
+      }.bind(tileset);
+    });
 
     // Normalize layers to a zero indexed map
     this.map.layers.forEach(function(layer) {
@@ -14,12 +29,16 @@
   }
 
   TileMap.prototype.clip = function(index) {
-    // TODO Generalize for multiple tilesets
-    var tileset = this.map.tilesets[0];
+    var tileset = null;
+    this.map.tilesets.forEach(function(set) {
+      if (set.inside(index)) {
+        tileset = set;
+      }
+    });
     var row = Math.floor((index * tileset.tilewidth) / tileset.imagewidth);
 
     return {
-      image: this.images[0],
+      image: tileset.image,
       x: (index * tileset.tilewidth) % tileset.imagewidth,
       y: (row * tileset.tileheight) % tileset.imageheight,
       width: tileset.tilewidth,
