@@ -7,5 +7,5 @@ $(document).ready(function() {
     images: [document.getElementById('tileset')],
     map: window.Map,
   });
-  tileMap.draw();
+  tileMap.draw(0, 0);
 });

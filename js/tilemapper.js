@@ -46,14 +46,15 @@
     }
   }
 
-  TileMap.prototype.draw = function() {
+  TileMap.prototype.draw = function(offsetX, offsetY) {
     this.map.layers.forEach(function(layer) {
       layer.data.forEach(function(number, index) {
-        var x = index % layer.width;
+        var x = (index % layer.width);
         var y = Math.floor(index / layer.width);
         var clip = this.clip(number);
         this.context.drawImage(clip.image, clip.x, clip.y, clip.width, clip.height,
-                               x * Map.tilewidth, y * Map.tileheight, Map.tilewidth, Map.tileheight);
+                               (x * Map.tilewidth) + offsetX, (y * Map.tileheight) + offsetY,
+                               Map.tilewidth, Map.tileheight);
       }, this)
     }, this);
   }
