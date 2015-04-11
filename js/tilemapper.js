@@ -49,6 +49,10 @@
   TileMap.prototype.draw = function(offsetX, offsetY) {
     this.map.layers.forEach(function(layer) {
       layer.data.forEach(function(number, index) {
+        if (number < 0) {
+          return;
+        }
+
         var x = (index % layer.width);
         var y = Math.floor(index / layer.width);
         var clip = this.clip(number);
