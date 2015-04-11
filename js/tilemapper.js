@@ -3,6 +3,7 @@
     this.canvas = options.canvas;
     this.context = this.canvas.getContext('2d');
     this.map = options.map;
+    this.entities = options.entities || [],
 
     // Add each image to the appropriate tileset and patch a function to verify
     // it's index boundaries
@@ -18,13 +19,21 @@
       tilesets[index].inside = function(number) {
         return number >= this.min && this.max >= number;
       }.bind(tileset);
+      tilesets[index].getZIndex = function() {
+        return this.properties * this.map.tileheight;
+      }.bind(tileset);
     });
 
     // Normalize layers to a zero indexed map
-    this.map.layers.forEach(function(layer) {
+    var map = this.map;
+    this.map.layers.forEach(function(layer, index, layers) {
       layer.data.forEach(function(number, index, layer) {
         layer[index] = number - 1;
       });
+      layers[index].getZIndex = function() {
+        var top = parseFloat(this.properties.zIndex || 0) * map.tileheight;
+        return top + map.tileheight;
+      }.bind(layers[index]);
     });
   }
 
@@ -47,6 +56,7 @@
   }
 
   TileMap.prototype.draw = function(offsetX, offsetY) {
+    var pendingEntities = this.entities.slice(0);
     this.map.layers.forEach(function(layer) {
       layer.data.forEach(function(number, index) {
         if (number < 0) {
@@ -59,7 +69,12 @@
         this.context.drawImage(clip.image, clip.x, clip.y, clip.width, clip.height,
                                (x * Map.tilewidth) + offsetX, (y * Map.tileheight) + offsetY,
                                Map.tilewidth, Map.tileheight);
-      }, this)
+      }, this);
+      pendingEntities.forEach(function(entity, index, pending) {
+        if (layer.getZIndex() < entity.getZIndex()) {
+          entity.draw();
+        }
+      });
     }, this);
   }
 
