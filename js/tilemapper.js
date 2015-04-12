@@ -42,11 +42,11 @@
     this.imageLayers.forEach(function(layer, index, layers) {
       layers[index].image = document.getElementById(layer.image);
       layers[index].context = this.context;
-      layers[index].getZIndex = function() {
-        return this.y + this.image.height;
+      layers[index].getZIndex = function(offsetY) {
+        return this.y + this.image.height + offsetY;
       }.bind(layers[index]);
-      layers[index].draw = function() {
-        this.context.drawImage(this.image, this.x, this.y);
+      layers[index].draw = function(offsetX, offsetY) {
+        this.context.drawImage(this.image, this.x + offsetX, this.y + offsetY);
       }.bind(layers[index]);
     }, this);
   }
@@ -89,12 +89,12 @@
     // Prepare objects drawing order
     var objects = this.entities.concat(this.imageLayers);
     objects.sort(function(a, b) {
-      return a.getZIndex() - b.getZIndex();
+      return a.getZIndex(offsetY) - b.getZIndex(offsetY);
     });
 
     // Draw movable objects
     objects.forEach(function(object) {
-      object.draw();
+      object.draw(offsetX, offsetY);
     });
   }
 

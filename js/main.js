@@ -1,3 +1,5 @@
+// XXX This code needs heavy refactoring
+
 function Timer() {
   this.time = new Date();
 }
@@ -11,6 +13,10 @@ Timer.prototype.reset = function() {
 }
 
 var entity = {
+  offset: {
+    x: 0,
+    y: 0,
+  },
   x: 100,
   y: 100,
   speedX: 0,
@@ -18,8 +24,19 @@ var entity = {
   timer: new Timer(),
   draw: function() {
     var elapsed = this.timer.getElapsed() / 1000;
-    this.x += this.speedX * elapsed;
-    this.y += this.speedY * elapsed;
+
+    if (this.x >= (this.canvas.width / 2)) {
+      this.offset.x -= this.speedX * elapsed;
+    }
+    else {
+      this.x += this.speedX * elapsed;
+    }
+    if (this.y >= (this.canvas.height / 2)) {
+      this.offset.y -= this.speedY * elapsed;
+    }
+    else {
+      this.y += this.speedY * elapsed;
+    }
     this.context.fillRect(this.x, this.y, 32, 32);
     this.timer.reset();
   },
@@ -30,9 +47,10 @@ var entity = {
 
 $(document).ready(function() {
   var canvas = document.getElementById('canvas');
-  canvas.width = Map.width * Map.tilewidth;
-  canvas.height = Map.height * Map.tileheight;
+  canvas.width = 600;
+  canvas.height = 600;
 
+  entity.canvas = canvas;
   entity.context = canvas.getContext('2d');
 
   var tileMap = new TileMap({
@@ -44,7 +62,7 @@ $(document).ready(function() {
 
   setInterval(function() {
     canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-    tileMap.draw(0, 0);
+    tileMap.draw(entity.offset.x, entity.offset.y);
   }, 50);
 
   // Setup entity movement interactivity
