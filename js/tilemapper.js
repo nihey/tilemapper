@@ -19,14 +19,12 @@
       tilesets[index].inside = function(number) {
         return number >= this.min && this.max >= number;
       }.bind(tileset);
-      tilesets[index].getZIndex = function() {
-        return this.properties * this.map.tileheight;
-      }.bind(tileset);
     });
 
     // Normalize layers to a zero indexed map
     var map = this.map;
     this.map.layers.forEach(function(layer, index, layers) {
+      layers[index].properties = layer.properties || {};
       layer.data.forEach(function(number, index, layer) {
         layer[index] = number - 1;
       });
