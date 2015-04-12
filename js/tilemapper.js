@@ -31,7 +31,7 @@
         layer[index] = number - 1;
       });
       layers[index].getZIndex = function() {
-        var top = parseFloat(this.properties.zIndex || 0) * map.tileheight;
+        var top = parseFloat(this.properties.zIndex || -999) * map.tileheight;
         return top + map.tileheight;
       }.bind(layers[index]);
     });

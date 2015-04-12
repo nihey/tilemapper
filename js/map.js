@@ -8,7 +8,7 @@ window.Map = {
          "opacity":1,
          "properties":
             {
-             "zIndex":"0"
+             "zIndex":"-9999"
             },
          "type":"tilelayer",
          "visible":true,
