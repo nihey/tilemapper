@@ -21,18 +21,34 @@
       }.bind(tileset);
     });
 
+    // Sepparate tile layers from image layers
+    this.tileLayers = this.map.layers.filter(function(layer) {
+      return layer.type === 'tilelayer';
+    });
+
+    // Filter image layers
+    this.imageLayers = this.map.layers.filter(function(layer) {
+      return layer.type === 'imagelayer';
+    });
+
     // Normalize layers to a zero indexed map
-    var map = this.map;
-    this.map.layers.forEach(function(layer, index, layers) {
-      layers[index].properties = layer.properties || {};
+    this.tileLayers.forEach(function(layer) {
       layer.data.forEach(function(number, index, layer) {
         layer[index] = number - 1;
       });
-      layers[index].getZIndex = function() {
-        var top = parseFloat(this.properties.zIndex || -999) * map.tileheight;
-        return top + map.tileheight;
-      }.bind(layers[index]);
     });
+
+    // Load image from their id
+    this.imageLayers.forEach(function(layer, index, layers) {
+      layers[index].image = document.getElementById(layer.image);
+      layers[index].context = this.context;
+      layers[index].getZIndex = function() {
+        return this.y + this.image.height;
+      }.bind(layers[index]);
+      layers[index].draw = function() {
+        this.context.drawImage(this.image, this.x, this.y);
+      }.bind(layers[index]);
+    }, this);
   }
 
   TileMap.prototype.clip = function(index) {
@@ -54,8 +70,8 @@
   }
 
   TileMap.prototype.draw = function(offsetX, offsetY) {
-    var pendingEntities = this.entities.slice(0);
-    this.map.layers.forEach(function(layer) {
+    // First, draw tile layers
+    this.tileLayers.forEach(function(layer) {
       layer.data.forEach(function(number, index) {
         if (number < 0) {
           return;
@@ -68,12 +84,18 @@
                                (x * Map.tilewidth) + offsetX, (y * Map.tileheight) + offsetY,
                                Map.tilewidth, Map.tileheight);
       }, this);
-      pendingEntities.forEach(function(entity, index, pending) {
-        if (layer.getZIndex() < entity.getZIndex()) {
-          entity.draw();
-        }
-      });
     }, this);
+
+    // Prepare objects drawing order
+    var objects = this.entities.concat(this.imageLayers);
+    objects.sort(function(a, b) {
+      return a.getZIndex() - b.getZIndex();
+    });
+
+    // Draw movable objects
+    objects.forEach(function(object) {
+      object.draw();
+    });
   }
 
   window.TileMap = TileMap;

@@ -6,10 +6,6 @@ window.Map = {
          "height":10,
          "name":"Base",
          "opacity":1,
-         "properties":
-            {
-             "zIndex":"-9999"
-            },
          "type":"tilelayer",
          "visible":true,
          "width":10,
@@ -17,34 +13,48 @@ window.Map = {
          "y":0
         },
         {
-         "data":[0, 4, 5, 6, 7, 0, 0, 0, 0, 0, 0, 12, 13, 14, 15, 0, 0, 0, 0, 0, 0, 20, 21, 22, 23, 0, 0, 0, 0, 0, 0, 28, 29, 30, 31, 0, 0, 0, 0, 0, 0, 36, 37, 38, 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "height":10,
-         "name":"Objects",
+         "image":"tree",
+         "name":"Image Layer 1",
          "opacity":1,
-         "properties":
-            {
-             "zIndex":"4"
-            },
-         "type":"tilelayer",
+         "type":"imagelayer",
          "visible":true,
          "width":10,
-         "x":0,
-         "y":0
+         "x":-14,
+         "y":-106
         },
         {
-         "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 5, 6, 7, 0, 0, 0, 0, 0, 0, 12, 13, 14, 15, 0, 0, 0, 0, 0, 0, 20, 21, 22, 23, 0, 0, 0, 0, 0, 0, 28, 29, 30, 31, 0, 0, 0, 0, 0, 0, 36, 37, 38, 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "height":10,
-         "name":"Objects 2",
+         "image":"tree",
+         "name":"Copy of Image Layer 1",
          "opacity":1,
-         "properties":
-            {
-             "zIndex":"8"
-            },
-         "type":"tilelayer",
+         "type":"imagelayer",
          "visible":true,
          "width":10,
-         "x":0,
-         "y":0
+         "x":176,
+         "y":-52
+        },
+        {
+         "height":10,
+         "image":"tree",
+         "name":"Copy of Copy of Image Layer 1",
+         "opacity":1,
+         "type":"imagelayer",
+         "visible":true,
+         "width":10,
+         "x":18,
+         "y":65
+        },
+        {
+         "height":10,
+         "image":"tree",
+         "name":"Copy of Copy of Copy of Image Layer 1",
+         "opacity":1,
+         "type":"imagelayer",
+         "visible":true,
+         "width":10,
+         "x":190,
+         "y":193
         }],
  "nextobjectid":1,
  "orientation":"orthogonal",
@@ -67,13 +77,6 @@ window.Map = {
             },
          "spacing":0,
          "tileheight":32,
-         "tileproperties":
-            {
-             "36":
-                {
-                 "zIndex":"4"
-                }
-            },
          "tilewidth":32,
          "transparentcolor":"#ffffff"
         }],
