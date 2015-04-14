@@ -23,16 +23,41 @@ var entity = {
   speedY: 0,
   timer: new Timer(),
   draw: function() {
+    // XXX This code needs heavy refactoring
     var elapsed = this.timer.getElapsed() / 1000;
+    var realX = this.x - this.offset.x + 16;
+    var realY = this.y - this.offset.y + 16;
 
-    if (this.x >= (this.canvas.width / 2)) {
+    if (realX >= (this.canvas.width / 2) &&
+        (realX <= (Map.width * Map.tilewidth - (this.canvas.width / 2))) &&
+        (this.offset.x <= 0) &&
+        (this.offset.x >= (-Map.width * Map.tilewidth + this.canvas.width))) {
       this.offset.x -= this.speedX * elapsed;
+      if (this.offset.x > 0) {
+        this.x += this.speedX * elapsed;
+        this.offset.x = 0;
+      }
+      if (this.offset.x < (-Map.width * Map.tilewidth + this.canvas.width)) {
+        this.x += this.speedX * elapsed;
+        this.offset.x = -Map.width * Map.tilewidth + this.canvas.width;
+      }
     }
     else {
       this.x += this.speedX * elapsed;
     }
-    if (this.y >= (this.canvas.height / 2)) {
+    if (realY >= (this.canvas.height / 2) &&
+        (realY <= (Map.height * Map.tileheight - (this.canvas.height / 2))) &&
+        (this.offset.y <= 0) &&
+        (this.offset.y >= (-Map.height * Map.tileheight + this.canvas.height))) {
       this.offset.y -= this.speedY * elapsed;
+      if (this.offset.y > 0) {
+        this.y += this.speedY * elapsed;
+        this.offset.y = 0;
+      }
+      if (this.offset.y < (-Map.height * Map.tileheight + this.canvas.height)) {
+        this.y += this.speedY * elapsed;
+        this.offset.y = -Map.height * Map.tileheight + this.canvas.height;
+      }
     }
     else {
       this.y += this.speedY * elapsed;
