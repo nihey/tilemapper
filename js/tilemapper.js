@@ -1,4 +1,12 @@
 (function() {
+  var Utils = {
+    getImage: function(func, thisArg) {
+      var canvas = document.createElement('canvas');
+      func.call(thisArg || this, canvas);
+      return canvas.toDataURL();
+    },
+  };
+
   var TileMap = function(options) {
     this.canvas = options.canvas;
     this.context = this.canvas.getContext('2d');
@@ -49,6 +57,38 @@
         this.context.drawImage(this.image, this.x + offsetX, this.y + offsetY);
       }.bind(layers[index]);
     }, this);
+
+    var image = new Image();
+    image.src = Utils.getImage(function(canvas) {
+      canvas.width = this.map.width * this.map.tilewidth;
+      canvas.height = this.map.height * this.map.tileheight;
+      var context = canvas.getContext('2d');
+      this.tileLayers.forEach(function(layer) {
+        layer.data.forEach(function(number, index) {
+          if (number < 0) {
+            return;
+          }
+
+          var x = (index % layer.width);
+          var y = Math.floor(index / layer.width);
+          var clip = this.clip(number);
+          context.drawImage(clip.image, clip.x, clip.y, clip.width, clip.height,
+                                 (x * Map.tilewidth), (y * Map.tileheight),
+                                 Map.tilewidth, Map.tileheight);
+        }, this);
+      }, this);
+    }, this);
+    var layer = {
+      image: image,
+      x: 0,
+      y: 0,
+      context: this.context,
+      getZIndex: function() {return -9999;},
+    };
+    layer.draw = function(offsetX, offsetY) {
+      this.context.drawImage(this.image, this.x + offsetX, this.y + offsetY);
+    }.bind(layer);
+    this.imageLayers.push(layer);
   }
 
   TileMap.prototype.clip = function(index) {
@@ -70,21 +110,6 @@
   }
 
   TileMap.prototype.draw = function(offsetX, offsetY) {
-    // First, draw tile layers
-    this.tileLayers.forEach(function(layer) {
-      layer.data.forEach(function(number, index) {
-        if (number < 0) {
-          return;
-        }
-
-        var x = (index % layer.width);
-        var y = Math.floor(index / layer.width);
-        var clip = this.clip(number);
-        this.context.drawImage(clip.image, clip.x, clip.y, clip.width, clip.height,
-                               (x * Map.tilewidth) + offsetX, (y * Map.tileheight) + offsetY,
-                               Map.tilewidth, Map.tileheight);
-      }, this);
-    }, this);
 
     // Prepare objects drawing order
     var objects = this.entities.concat(this.imageLayers);
