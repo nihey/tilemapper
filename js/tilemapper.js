@@ -15,35 +15,11 @@
 
     // Add each image to the appropriate tileset and patch a function to verify
     // it's index boundaries
-    this.map.tilesets.forEach(function(tileset, index, tilesets) {
-      var tiles = Math.floor(tileset.imagewidth / tileset.tilewidth) *
-                  Math.floor(tileset.imageheight / tileset.tileheight);
+    this._setupTilesets(options);
 
-      tilesets[index].image = options.images[index];
-      tilesets[index].min = tileset.firstgid - 1;
-      tilesets[index].max = tilesets[index].min + tiles;
-
-      // Check whether the 'number' is in this tileset or not
-      tilesets[index].inside = function(number) {
-        return number >= this.min && this.max >= number;
-      }.bind(tileset);
-    });
-
-    // Sepparate tile layers from image layers
-    this.tileLayers = this.map.layers.filter(function(layer) {
-      return layer.type === 'tilelayer';
-    });
-
-    // Filter image layers
+    // Sepparate image layers from the others
     this.imageLayers = this.map.layers.filter(function(layer) {
       return layer.type === 'imagelayer';
-    });
-
-    // Normalize layers to a zero indexed map
-    this.tileLayers.forEach(function(layer) {
-      layer.data.forEach(function(number, index, layer) {
-        layer[index] = number - 1;
-      });
     });
 
     // Load image from their id
@@ -58,12 +34,40 @@
       }.bind(layers[index]);
     }, this);
 
+    this._setupTiles();
+  }
+
+  /*
+   *  Private API
+   */
+
+  TileMap.prototype._setupTilesets = function(options) {
+    this.map.tilesets.forEach(function(tileset, index, tilesets) {
+      var tiles = Math.floor(tileset.imagewidth / tileset.tilewidth) *
+                  Math.floor(tileset.imageheight / tileset.tileheight);
+
+      tilesets[index].image = options.images[index];
+      tilesets[index].min = tileset.firstgid - 1;
+      tilesets[index].max = tilesets[index].min + tiles;
+
+      // Check whether the 'number' is in this tileset or not
+      tilesets[index].inside = function(number) {
+        return number >= this.min && this.max >= number;
+      }.bind(tileset);
+    });
+  }
+
+  TileMap.prototype._setupTiles = function() {
     var image = new Image();
     image.src = Utils.getImage(function(canvas) {
       canvas.width = this.map.width * this.map.tilewidth;
       canvas.height = this.map.height * this.map.tileheight;
       var context = canvas.getContext('2d');
-      this.tileLayers.forEach(function(layer) {
+      this.map.layers.forEach(function(layer) {
+        if(layer.type !== 'tilelayer') {
+          return;
+        }
+
         layer.data.forEach(function(number, index) {
           if (number < 0) {
             return;
@@ -71,7 +75,7 @@
 
           var x = (index % layer.width);
           var y = Math.floor(index / layer.width);
-          var clip = this.clip(number);
+          var clip = this._clip(number);
           context.drawImage(clip.image, clip.x, clip.y, clip.width, clip.height,
                                  (x * Map.tilewidth), (y * Map.tileheight),
                                  Map.tilewidth, Map.tileheight);
@@ -91,7 +95,8 @@
     this.imageLayers.push(layer);
   }
 
-  TileMap.prototype.clip = function(index) {
+  TileMap.prototype._clip = function(index) {
+    index = index - 1;
     var tileset = null;
     this.map.tilesets.forEach(function(set) {
       if (set.inside(index)) {
@@ -108,6 +113,10 @@
       height: tileset.tileheight,
     }
   }
+
+  /*
+   *  Public API
+   */
 
   TileMap.prototype.draw = function(offsetX, offsetY) {
 
