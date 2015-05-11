@@ -25,9 +25,35 @@ var entity = {
   draw: function() {
     // XXX This code needs heavy refactoring
     var elapsed = this.timer.getElapsed() / 1000;
+
+    // calculate the real character coordinates on the grid
     var realX = this.x - this.offset.x + 16;
     var realY = this.y - this.offset.y + 16;
 
+    // If x coordinate is beyond viewport.width / 2 and before (Map.width
+    // - viewport.width / 2) Global offset should be changed, instead of local
+    // x
+    //
+    // Example: area inside x will have global offset changed
+    //
+    // #---------------###############################
+    // |      x        |                       x     #
+    // |      x        |                       x     #
+    // |      x        |                       x     #
+    // |      x        |                       x     #
+    // #------x--------                        x     #
+    // #      x                                x     #
+    // #      x                                x     #
+    // #      x                                x     #
+    // #      x                                x     #
+    // #      x                                x     #
+    // #      x                                x     #
+    // #      x                                x     #
+    // #      x                                x     #
+    // #      x                                x     #
+    // ###############################################
+    //
+    // Offset checks are useful to avoid the area inside x be dislocated
     if (realX >= (this.canvas.width / 2) &&
         (realX <= (Map.width * Map.tilewidth - (this.canvas.width / 2))) &&
         (this.offset.x <= 0) &&
@@ -45,6 +71,8 @@ var entity = {
     else {
       this.x += this.speedX * elapsed;
     }
+
+    // This checks are the same for the analogous version for y coordinate
     if (realY >= (this.canvas.height / 2) &&
         (realY <= (Map.height * Map.tileheight - (this.canvas.height / 2))) &&
         (this.offset.y <= 0) &&
