@@ -1,5 +1,8 @@
 // XXX This code needs heavy refactoring
 
+import TileMap from 'tilemapper';
+import Map from 'map';
+
 function Timer() {
   this.time = new Date();
 }
@@ -109,7 +112,7 @@ $(document).ready(function() {
   var tileMap = new TileMap({
     canvas: canvas,
     images: [document.getElementById('tileset')],
-    map: window.Map,
+    map: Map,
     entities: [entity],
   });
 

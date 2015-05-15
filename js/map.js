@@ -1,4 +1,4 @@
-window.Map = {
+export default  {
  "height":50,
  "layers":[
         {

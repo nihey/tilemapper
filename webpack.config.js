@@ -1,12 +1,23 @@
-var webpack = require('webpack');
+var webpack = require('webpack'),
+    path = require('path');
 
 module.exports = {
-  entry: './js/tilemapper.js',
+  entry: './js/main.js',
+  devtool: ['source-map'],
+
+  module: {
+    loaders: [
+      { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader'},
+    ],
+  },
+
+  resolve: {
+    root: path.join(__dirname, 'js'),
+    extensions: ['', '.js'],
+  },
+
   output: {
     path: './dist/',
-    filename: 'tilemapper.min.js',
+    filename: 'world.js',
   },
-  plugins: [
-    new webpack.optimize.UglifyJsPlugin({minimize: true}),
-  ],
 };
