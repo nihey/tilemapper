@@ -2,6 +2,7 @@ export default class World {
   constructor(options) {
     this.load = options.load;
     this.init = options.init;
+    this.loop = options.loop;
 
     // Object that will hold loaded images
     this.images = {};
@@ -23,6 +24,13 @@ export default class World {
   }
 
   tryInit() {
-    this.image.pending || this.init();
+    this.image.pending || this.start();
+  }
+
+  start() {
+    this.init();
+    setInterval(() => {
+      this.loop();
+    }, 20);
   }
 }

@@ -2,6 +2,8 @@
 
 import TileMap from 'tilemapper';
 import Map from 'map';
+import World from 'world';
+
 
 function Timer() {
   this.time = new Date();
@@ -106,45 +108,57 @@ $(document).ready(function() {
   canvas.width = 600;
   canvas.height = 600;
 
-  entity.canvas = canvas;
-  entity.context = canvas.getContext('2d');
+  var tileMap;
 
-  var tileMap = new TileMap({
-    canvas: canvas,
-    images: [document.getElementById('tileset')],
-    map: Map,
-    entities: [entity],
-  });
+  var world = new World({
+    load: function() {
+      this.image.load('tiles', 'img/tiles.jpg');
+      this.image.load('tree', 'img/tree.png');
+    },
+    init: function() {
+      entity.canvas = canvas;
+      entity.context = canvas.getContext('2d');
 
-  setInterval(function() {
-    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-    tileMap.draw(entity.offset.x, entity.offset.y);
-  }, 50);
+      tileMap = new TileMap({
+        canvas: canvas,
+        images: [this.images['tiles']],
+        map: Map,
+        entities: [entity],
+      });
 
-  // Setup entity movement interactivity
-  $(document).keydown(function(event) {
-    var speed = 140;
-    switch(event.which) {
-      case 38: // Up
-        entity.speedY = -speed;
-      break;
-      case 37: // Left
-        entity.speedX = -speed;
-      break;
-      case 40: // Down
-        entity.speedY = speed;
-      break;
-      case 39: // Right
-        entity.speedX = speed;
-      break;
-    }
-  });
-  $(document).keyup(function(event) {
-    if ($.inArray(event.which, [37, 39]) !== -1) {
-      entity.speedX = 0;
-    }
-    if ($.inArray(event.which, [38, 40]) !== -1) {
-      entity.speedY = 0;
+      setInterval(function() {
+      }, 50);
+
+      // Setup entity movement interactivity
+      $(document).keydown(function(event) {
+        var speed = 140;
+        switch(event.which) {
+          case 38: // Up
+            entity.speedY = -speed;
+          break;
+          case 37: // Left
+            entity.speedX = -speed;
+          break;
+          case 40: // Down
+            entity.speedY = speed;
+          break;
+          case 39: // Right
+            entity.speedX = speed;
+          break;
+        }
+      });
+      $(document).keyup(function(event) {
+        if ($.inArray(event.which, [37, 39]) !== -1) {
+          entity.speedX = 0;
+        }
+        if ($.inArray(event.which, [38, 40]) !== -1) {
+          entity.speedY = 0;
+        }
+      });
+    },
+    loop: function() {
+      canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+      tileMap.draw(entity.offset.x, entity.offset.y);
     }
   });
 });
