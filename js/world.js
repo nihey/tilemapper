@@ -1,36 +1,23 @@
+import {ImageLoader} from 'loaders';
+
 export default class World {
   constructor(options) {
-    this.load = options.load;
-    this.init = options.init;
-    this.loop = options.loop;
+    this._loadersObjects = {};
+    this.loaders = {};
+    this.resources = {};
 
-    // Object that will hold loaded images
-    this.images = {};
-
-    // Provides image loading functionalities
-    this.image = {pending: 0};
-    this.image.load = (name, url) => {
-      this.image.pending += 1;
-      this.images[name] = new Image();
-      this.images[name].onload = () => {
-        this.image.pending -= 1;
-        this.tryInit();
-      };
-      this.images[name].src = url;
-    };
-
+    this._addLoader('image', new ImageLoader(this.run.bind(this)));
     this.load();
-    this.tryInit();
   }
 
-  tryInit() {
-    this.image.pending || this.start();
+  _addLoader(name, loader) {
+    this._loadersObjects[name] = loader;
+    this.loaders[name] = loader.load.bind(loader);
+    this.resources[name] = loader.resources;
   }
 
-  start() {
-    this.init();
-    setInterval(() => {
-      this.loop();
-    }, 20);
+  run() {
+    this.start();
+    setInterval(this.update, 50);
   }
-}
+};
